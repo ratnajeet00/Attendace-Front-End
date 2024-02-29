@@ -43,6 +43,37 @@ app.post("/login", async (req, res) => {
 });
 
 
+
+
+
+
+app.post("/attendance-data", async (req, res) => {
+  try {
+      const userId = req.body.userId;
+
+      if (!userId) {
+          return res.status(400).json({ message: "User ID not provided" });
+      }
+
+      const [rows] = await pool.query("SELECT days_present, days_absent FROM attendance WHERE username = ?", [userId]);
+
+      if (rows.length > 0) {
+          // Assuming the columns in your table are named 'days_present', 'days_absent'
+          const { days_present, days_absent } = rows[0];
+
+          // Send the data as a JSON response
+          return res.status(200).json({
+              daysPresent: days_present,
+              daysAbsent: days_absent
+          });
+      } else {
+          return res.status(404).json({ message: "User not found or no attendance data available" });
+      }
+  } catch (error) {
+      console.error('Error retrieving attendance data:', error);
+      return res.status(500).json({ message: "Internal server error" });
+  }
+});
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
