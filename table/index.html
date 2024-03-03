@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Table 01</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Add your custom script here -->
+  <script>
+    // Fetch data from the API endpoint
+    fetch('http://localhost:8080/all-attendance-data')
+      .then(response => {
+        // Check if the response is successful (status code 200)
+        if (!response.ok) {
+          throw new Error(`Error: ${response.statusText}`);
+        }
+  
+        // Check if the response contains JSON content type
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          throw new Error('Invalid content type, expected JSON');
+        }
+  
+        return response.json();
+      })
+      .then(data => {
+        // Access the attendanceData array in the response
+        const attendanceData = data.attendanceData;
+  
+        // Get the table body element
+        const tableBody = document.getElementById('attendanceTableBody');
+  
+        // Loop through the attendanceData and create table rows
+        attendanceData.forEach((entry, index) => {
+          const row = document.createElement('tr');
+  
+          // Add Sr. No as the first column
+          const srNoCell = document.createElement('td');
+          srNoCell.textContent = index + 1;
+          row.appendChild(srNoCell);
+  
+          // Assuming the structure is [id, username, days_present, days_absent]
+          const columnsToDisplay = ['username', 'days_present', 'days_absent'];
+
+          columnsToDisplay.forEach(column => {
+            const cell = document.createElement('td');
+            cell.textContent = entry[column];
+            row.appendChild(cell);
+          });
+
+          // Add a new column for Percentage at the end
+          const percentageCell = document.createElement('td');
+          const daysPresent = parseInt(entry['days_present']);
+          const daysAbsent = parseInt(entry['days_absent']);
+          const totalDays = daysPresent + daysAbsent;
+          const percentage = totalDays === 0 ? 0 : (daysPresent / totalDays) * 100;
+          percentageCell.textContent = percentage.toFixed(2) + '%';
+          row.appendChild(percentageCell);
+  
+          tableBody.appendChild(row);
+        });
+      })
+      .catch(error => console.error('Error fetching attendance data:', error));
+  </script>
+
+  <style>
+    /* Custom CSS for increasing the table size */
+    table {
+      width: 100%;
+      margin-top: 10px;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 15px; /* Adjust the padding to increase cell size */
+      text-align: left;
+      border-bottom: 1px solid #270979;
+      background-color: #fff; /* Set background color to white for better visibility when printing */
+      color: #000; /* Set text color to black for better visibility when printing */
+    }
+
+    th {
+      background-color: #270979;
+      color: #fff;
+    }
+
+    #per {
+      background-color: #270979;
+      color: #fff;
+    }
+
+    /* Custom CSS for Print button */
+    #printButton {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      padding: 10px;
+      background-color: #007bff;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    /* Media query for print styles */
+    @media print {
+      th, td, #per {
+        background-color: #fff !important;
+        color: #000 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Print button -->
+  <div id="printButton" onclick="printTable()">Print</div>
+
+  <section class="ftco-section">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-md-6 text-center mb-5">
+          <h2 class="heading-section">Table #01</h2>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <div class="table-wrap">
+            <table class="table">
+              <thead class="thead-primary">
+                <tr>
+                  <th>Sr no</th>
+                  <th>User Name</th>
+                  <th>Days Present</th>
+                  <th>Days Absent</th>
+                  <th id="per">Percentage</th>
+                </tr>
+              </thead>
+              <tbody id="attendanceTableBody">
+                <!-- Data will be dynamically added here using JavaScript -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="js/jquery.min.js"></script>
+  <script src="js/popper.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/main.js"></script>
+
+  <script>
+    // Function to print the table
+    function printTable() {
+      window.print();
+    }
+  </script>
+</body>
+</html>

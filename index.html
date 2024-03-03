@@ -19,10 +19,16 @@
 <!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="css/util.css">
 	<link rel="stylesheet" type="text/css" href="css/main.css">
+	<script src="passwords.js" defer></script>
 <!--===============================================================================================-->
+<style>
+	#passwordHeader {
+		display: none;
+	}
+</style>
 </head>
-<bod>
-	
+<body>
+
 	<div class="limiter">
 		<div class="container-login100">
 			<div class="wrap-login100">
@@ -55,9 +61,29 @@
 						<button class="login100-form-btn" type="button" onclick="validateAndLogin()">
 							Login
 						</button>
+						<button class="login100-form-btn"  style="margin-top: 5%;" type="button" onclick="validate()">
+							Get Student Data 
+						</button>
+						
 					</div>
 					
-
+					
+					<script>
+						function validate() {
+							var enteredPassword = prompt("Enter password:");
+				
+							// Access the correct password from the external JavaScript file
+							if (enteredPassword === correctPassword) {
+							
+								// Redirect to another page if needed
+								 window.location.href = "/table/index.html";
+							} else {
+								alert("Incorrect password. Please try again.");
+							}
+						}
+					</script>
+				
+								
 					
 				</form>
 			</div>
